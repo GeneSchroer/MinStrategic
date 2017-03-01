@@ -99,7 +99,7 @@ if L = [] then []
 else [];
 
 val companyList = [("traderJoes", ["pasta", "meat"], ["aldi"]), ("aldi",[],[]), ("costco", ["water", "tires", "icecream"],[])];
-
+(*
 val goods = getGoods(companyList);
 val temp = powerSet(companyList);
 val powerList = addComp(temp, companyList);
@@ -108,4 +108,17 @@ val trimmedList = eliminateFailure(goods, powerList);
 val trimmedComp = getCompanyList2(trimmedList);
 val c = getCompanyList(companyList);
 
-val minSet = min(length(0, getCompanyList(companyList)), trimmedComp, []); 
+val minSet = min(length(0, getCompanyList(companyList)), trimmedComp, []);
+*)
+
+fun strategic_companies(L) = 
+	let
+		val goods = getGoods(L)
+		val powerList = addComp(powerSet(L), L)
+		val trimmedList = eliminateFailure(goods, powerList)
+		val trimmedComp = getCompanyList2(trimmedList)
+	in
+		min(length(0, getCompanyList(companyList)), trimmedComp,[])
+	end;
+
+strategic_companies(companyList);
