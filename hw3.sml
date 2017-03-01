@@ -42,6 +42,9 @@ fun getGoods([]) = []
 fun getCompanyList([]) = []
 | getCompanyList((X,Y,Z)::Xs) = [#1(X,Y,Z)] @ getCompanyList(Xs);
 
+fun getCompanyList2(L) = if L = [] then []
+else getCompanyList(hd(L))::getCompanyList2(tl(L));
+
 (* Insert an element E into every list in L*)
 fun insert_all(E,L) = if L = [] then []
 else (E::hd(L)) :: insert_all(E,tl(L));
@@ -76,14 +79,33 @@ else addComp_helper(hd(P),O) ::  addComp(tl(P),O);
 (* Fourth, remove all companies in the powerset 
 that do not produce all goods *)
 
-fun removeFailures(G, P) = if P = [] then []
-else if equal(G, getGoods(hd(P))) then hd(P)::removeFailures(G, tl(P))
-else removeFailures(G, tl(P));
+fun eliminateFailure(G, P) = if P = [] then []
+else if equal(G, getGoods(hd(P))) then hd(P)::eliminateFailure(G, tl(P))
+else eliminateFailure(G, tl(P));
 
 
-val test1 = [("traderJoes", ["pasta", "meat"], ["aldi"]), ("aldi",[],[]), ("costco", ["water", "tires", "icecream"],[])];
+(* Fifth, determine the minimum set *)
 
-val test2 = getCompanyList(test1);
-val test3 = powerSet(test1);
-val test4 = addComp(test3, test1);
+fun length(M, L) = if L = [] then M
+else length(M+1, tl(L));
 
+fun min(M, L, S) = if L = [] then S
+else if length(0, hd(L)) < M then min(length(0,hd(L)), tl(L), hd(L))
+else min(M, tl(L), S);
+
+(* Finally, put it all together *)
+fun getMinimumSet(L: (string * string list * string list) list) =
+if L = [] then []
+else [];
+
+val companyList = [("traderJoes", ["pasta", "meat"], ["aldi"]), ("aldi",[],[]), ("costco", ["water", "tires", "icecream"],[])];
+
+val goods = getGoods(companyList);
+val temp = powerSet(companyList);
+val powerList = addComp(temp, companyList);
+val trimmedList = eliminateFailure(goods, powerList);
+
+val trimmedComp = getCompanyList2(trimmedList);
+val c = getCompanyList(companyList);
+
+val minSet = min(length(0, getCompanyList(companyList)), trimmedComp, []); 
